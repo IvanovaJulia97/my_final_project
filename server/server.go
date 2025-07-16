@@ -9,7 +9,7 @@ import (
 const myPort = "7540"
 const webDir = "./web"
 
-func MyServer() {
+func Server() {
 
 	port := os.Getenv("TODO_PORT")
 	if port == "" {
@@ -19,7 +19,8 @@ func MyServer() {
 	file := http.FileServer(http.Dir(webDir))
 	http.Handle("/", file)
 
-	log.Println("Сервер успешно запущен")
+	log.Printf("Сервер запущен, порт %s\n", port)
+
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Fatal("Ошибка запуска сервера:", err)
 	}

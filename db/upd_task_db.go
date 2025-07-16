@@ -2,13 +2,13 @@ package db
 
 import "fmt"
 
-func UpdateTask(task *Task) error {
+func (s *SQLSchedulerStore) UpdateTask(task *Task) error {
 	req := `
 		UPDATE scheduler
 		SET date = ?, title = ?, comment = ?, repeat = ?
 		WHERE id = ?`
 
-	res, err := DB.Exec(req, task.Date, task.Title, task.Comment, task.Repeat, task.ID)
+	res, err := s.db.Exec(req, task.Date, task.Title, task.Comment, task.Repeat, task.ID)
 	if err != nil {
 		return err
 	}
@@ -26,10 +26,10 @@ func UpdateTask(task *Task) error {
 
 }
 
-func UpdateDate(next string, id string) error {
+func (s *SQLSchedulerStore) UpdateDate(next string, id string) error {
 	req := `UPDATE scheduler SET date = ? WHERE id = ?`
 
-	res, err := DB.Exec(req, next, id)
+	res, err := s.db.Exec(req, next, id)
 	if err != nil {
 		return err
 	}

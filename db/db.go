@@ -4,8 +4,6 @@ import (
 	"database/sql"
 )
 
-var DB *sql.DB
-
 const schema = `
 CREATE TABLE IF NOT EXISTS scheduler (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -18,22 +16,24 @@ CREATE TABLE IF NOT EXISTS scheduler (
 CREATE INDEX IF NOT EXISTS idx_scheduler_date ON scheduler(date);
 `
 
-func Init(dbFile string) error {
-	connect, err := sql.Open("sqlite", dbFile)
-	if err != nil {
-		return err
-	}
-
-	DB = connect
-
-	if _, err := DB.Exec(schema); err != nil {
-		DB.Close()
-		return err
-	}
-
-	return nil
+type SQLSchedulerStore struct {
+	db *sql.DB
 }
 
-func Get() *sql.DB {
-	return DB
+func Init(dbFile string) (*SQLSchedulerStore, error) {
+	db, err := sql.Open("sqlite", dbFile)
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := db.Exec(schema); err != nil {
+		db.Close()
+		return nil, err
+	}
+
+	return &SQLSchedulerStore{db: db}, nil
+}
+
+func (s *SQLSchedulerStore) Close() error {
+	return s.db.Close()
 }

@@ -1,10 +1,12 @@
 package db
 
-import "fmt"
+import (
+	"fmt"
+)
 
-func DeleteTask(id string) error {
+func (s *SQLSchedulerStore) DeleteTask(id string) error {
 	req := `DELETE FROM scheduler WHERE id = ?`
-	res, err := DB.Exec(req, id)
+	res, err := s.db.Exec(req, id)
 	if err != nil {
 		return err
 	}

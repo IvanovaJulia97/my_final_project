@@ -5,8 +5,8 @@ import (
 	"fmt"
 )
 
-func SortTask(limit int) ([]*Task, error) {
-	str, err := DB.Query(`
+func (s *SQLSchedulerStore) SortTask(limit int) ([]*Task, error) {
+	str, err := s.db.Query(`
 		SELECT id, date, title, comment, repeat
 		FROM scheduler
 		ORDER BY CAST(date AS INT) ASC
@@ -31,9 +31,12 @@ func SortTask(limit int) ([]*Task, error) {
 		if err != nil {
 			return nil, fmt.Errorf("ошибка получения задачи: %w", err)
 		}
-		//fmt.Println(">>", t.Date)
 		tasks = append(tasks, &t)
 
+	}
+
+	if err := str.Err(); err != nil {
+		return nil, fmt.Errorf("ошибка при чтении записи: %w", err)
 	}
 
 	if tasks == nil {
@@ -44,14 +47,14 @@ func SortTask(limit int) ([]*Task, error) {
 
 }
 
-func GetTasks(id string) (*Task, error) {
+func (s *SQLSchedulerStore) GetTasks(id string) (*Task, error) {
 	req := `
 		SELECT id, date, title, comment, repeat
 		FROM scheduler
 		WHERE id = ?`
 
 	var t Task
-	err := DB.QueryRow(req, id).Scan(&t.ID,
+	err := s.db.QueryRow(req, id).Scan(&t.ID,
 		&t.Date,
 		&t.Title,
 		&t.Comment,

@@ -1,9 +1,5 @@
 package db
 
-import (
-	"database/sql"
-)
-
 type Task struct {
 	ID      int64  `json:"id,string"`
 	Date    string `json:"date"`
@@ -12,9 +8,9 @@ type Task struct {
 	Repeat  string `json:"repeat"`
 }
 
-func AddTask(db *sql.DB, task *Task) (int64, error) {
+func (s *SQLSchedulerStore) AddTask(task *Task) (int64, error) {
 	query := `INSERT INTO scheduler (date, title, comment, repeat) VALUES (?, ?, ?, ?)`
-	result, err := db.Exec(query, task.Date, task.Title, task.Comment, task.Repeat)
+	result, err := s.db.Exec(query, task.Date, task.Title, task.Comment, task.Repeat)
 	if err != nil {
 		return 0, err
 	}
